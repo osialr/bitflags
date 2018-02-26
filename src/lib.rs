@@ -154,6 +154,7 @@
 //!                         any bits that do not correspond to flags
 //! - `is_empty`: `true` if no flags are currently stored
 //! - `is_all`: `true` if all flags are currently set
+//! - `len`: number of flags that are currently stored
 //! - `intersects`: `true` if there are flags common to both `self` and `other`
 //! - `contains`: `true` all of the flags in `other` are contained within `self`
 //! - `insert`: inserts the specified flags in-place
@@ -540,6 +541,12 @@ macro_rules! __impl_bitflags {
                 *self == $BitFlags::all()
             }
 
+            /// Returns the number of flags that are currently stored.
+            #[inline]
+            pub fn len(&self) -> u32 {
+                self.bits.count_ones()
+            }
+
             /// Returns `true` if there are flags common to both `self` and `other`.
             #[inline]
             pub fn intersects(&self, other: $BitFlags) -> bool {
@@ -835,6 +842,16 @@ mod tests {
         assert!(Flags::ABC.is_all());
 
         assert!(AnotherSetOfFlags::ANOTHER_FLAG.is_all());
+    }
+
+    #[test]
+    fn test_len() {
+        assert_eq!(Flags::empty().len(), 0);
+        assert_eq!(Flags::A.len(), 1);
+        assert_eq!((Flags::C | Flags::B).len(), 2);
+        assert_eq!(Flags::ABC.len(), 3);
+
+        assert_eq!(AnotherSetOfFlags::ANOTHER_FLAG.len(), 8);
     }
 
     #[test]
